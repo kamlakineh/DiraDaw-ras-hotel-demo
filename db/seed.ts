@@ -330,18 +330,18 @@ async function seed() {
 
   // Insert food items
   await db.insert(foods).values([
-    { name: "Tibs (Beef)", price: 25, ingredients: "Fresh beef, onions, garlic, berbere spice, butter, rosemary", category: "Main", image: null },
-    { name: "Kitfo (Raw Beef)", price: 28, ingredients: "Minced raw beef, spiced butter, mitmita, cardamom", category: "Main", image: null },
-    { name: "Doro Wat (Chicken Stew)", price: 22, ingredients: "Chicken, red onions, berbere, niter kibbeh, hard-boiled eggs", category: "Main", image: null },
-    { name: "Shiro (Chickpea Stew)", price: 18, ingredients: "Chickpea flour, onions, garlic, berbere, turmeric", category: "Main", image: null },
-    { name: "Injera (Sourdough Flatbread)", price: 5, ingredients: "Teff flour, water, yeast starter", category: "Starter", image: null },
-    { name: "Sambusa (Fried Pastry)", price: 8, ingredients: "Lentil filling, onions, garlic, cumin, pastry dough", category: "Starter", image: null },
-    { name: "Azifa (Lentil Salad)", price: 10, ingredients: "Green lentils, onions, garlic, mustard, lemon juice", category: "Starter", image: null },
-    { name: "Cheesecake", price: 12, ingredients: "Cream cheese, sugar, eggs, vanilla, graham cracker crust", category: "Dessert", image: null },
-    { name: "Baklava", price: 10, ingredients: "Phyllo dough, walnuts, honey, cinnamon, butter", category: "Dessert", image: null },
-    { name: "Ethopian Coffee", price: 6, ingredients: "Freshly roasted Ethiopian coffee beans, water", category: "Drink", image: null },
-    { name: "Spiced Tea", price: 4, ingredients: "Black tea, cardamom, cinnamon, cloves, ginger", category: "Drink", image: null },
-    { name: "Fresh Mango Juice", price: 7, ingredients: "Fresh mangoes, water, sugar", category: "Drink", image: null },
+    { name: "Tibs (Beef)", price: 25, ingredients: "Fresh beef, onions, garlic, berbere spice, butter, rosemary", category: "Main", restaurantId: 1, image: null },
+    { name: "Kitfo (Raw Beef)", price: 28, ingredients: "Minced raw beef, spiced butter, mitmita, cardamom", category: "Main", restaurantId: 1, image: null },
+    { name: "Doro Wat (Chicken Stew)", price: 22, ingredients: "Chicken, red onions, berbere, niter kibbeh, hard-boiled eggs", category: "Main", restaurantId: 1, image: null },
+    { name: "Shiro (Chickpea Stew)", price: 18, ingredients: "Chickpea flour, onions, garlic, berbere, turmeric", category: "Main", restaurantId: 1, image: null },
+    { name: "Injera (Sourdough Flatbread)", price: 5, ingredients: "Teff flour, water, yeast starter", category: "Starter", restaurantId: 1, image: null },
+    { name: "Sambusa (Fried Pastry)", price: 8, ingredients: "Lentil filling, onions, garlic, cumin, pastry dough", category: "Starter", restaurantId: 1, image: null },
+    { name: "Azifa (Lentil Salad)", price: 10, ingredients: "Green lentils, onions, garlic, mustard, lemon juice", category: "Starter", restaurantId: 1, image: null },
+    { name: "Cheesecake", price: 12, ingredients: "Cream cheese, sugar, eggs, vanilla, graham cracker crust", category: "Dessert", restaurantId: 2, image: null },
+    { name: "Baklava", price: 10, ingredients: "Phyllo dough, walnuts, honey, cinnamon, butter", category: "Dessert", restaurantId: 2, image: null },
+    { name: "Ethopian Coffee", price: 6, ingredients: "Freshly roasted Ethiopian coffee beans, water", category: "Drink", restaurantId: 2, image: null },
+    { name: "Spiced Tea", price: 4, ingredients: "Black tea, cardamom, cinnamon, cloves, ginger", category: "Drink", restaurantId: 2, image: null },
+    { name: "Fresh Mango Juice", price: 7, ingredients: "Fresh mangoes, water, sugar", category: "Drink", restaurantId: 2, image: null },
   ]);
 
   console.log("✅ 12 food items created");

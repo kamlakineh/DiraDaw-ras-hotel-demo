@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Utensils, Search } from "lucide-react";
 import ImageUploader from "../../admin/components/ImageUploader";
 
@@ -9,6 +9,7 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
   const [editingItem, setEditingItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [restaurants, setRestaurants] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,9 +17,26 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
     ingredients: "",
     category: "Main",
     image: "",
+    restaurantId: "",
   });
 
   const categories = ["Starter", "Main", "Dessert", "Drink"];
+
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
+
+  const fetchRestaurants = async () => {
+    try {
+      const response = await fetch("/api/restaurants");
+      if (response.ok) {
+        const data = await response.json();
+        setRestaurants(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+    }
+  };
 
   const filteredFoods = foods
     .filter((food) => activeCategory === "all" || food.category === activeCategory)
@@ -32,6 +50,7 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
       ingredients: item.ingredients,
       category: item.category,
       image: item.image || "",
+      restaurantId: item.restaurantId?.toString() || "",
     });
     setIsModalOpen(true);
   };
@@ -44,6 +63,7 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
       ingredients: "",
       category: "Main",
       image: "",
+      restaurantId: "",
     });
     setIsModalOpen(true);
   };
@@ -58,6 +78,7 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
     const payload = {
       ...formData,
       price: Number(formData.price),
+      restaurantId: formData.restaurantId ? Number(formData.restaurantId) : null,
     };
 
     if (editingItem) {
@@ -229,6 +250,22 @@ export default function MenuManagement({ foods, onSave, onDelete }) {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-neutral-700 mb-2">Restaurant</label>
+                <select
+                  value={formData.restaurantId}
+                  onChange={(e) => setFormData({ ...formData, restaurantId: e.target.value })}
+                  className="w-full rounded-full border border-neutral-300 px-4 py-3 focus:border-[#bd902f] focus:outline-none"
+                >
+                  <option value="">Select a restaurant (optional)</option>
+                  {restaurants.map((restaurant) => (
+                    <option key={restaurant.id} value={restaurant.id}>
+                      {restaurant.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>

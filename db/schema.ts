@@ -113,6 +113,7 @@ export const foods = pgTable("foods", {
   ingredients: text("ingredients").notNull(),
   image: text("image"),
   category: text("category").notNull(), // Starter, Main, Dessert, Drink
+  restaurantId: integer("restaurant_id").references(() => restaurants.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

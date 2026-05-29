@@ -8,11 +8,11 @@ const navLinks = [
   { href: "/about", label: "About" },
   { href: "/room", label: "Rooms" },
   { href: "/restaurant", label: "Restaurant" },
+  { href: "/menu", label: "Menu" },
   { href: "/banquets", label: "Banquets" },
   { href: "/gallery", label: "Gallery" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
-  { href: "/#amenities", label: "Amenities" },
 ];
 
 export default function Navbar({ activePage = "", transparent = false }) {

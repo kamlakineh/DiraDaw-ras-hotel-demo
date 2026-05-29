@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, price, ingredients, category, image } = body;
+    const { name, price, ingredients, category, image, restaurantId } = body;
 
     if (!name || !price || !ingredients || !category) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       ingredients,
       category,
       image: image || null,
+      restaurantId: restaurantId ? Number(restaurantId) : null,
     }).returning();
 
     return NextResponse.json(newFood[0], { status: 201 });
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, name, price, ingredients, category, image } = body;
+    const { id, name, price, ingredients, category, image, restaurantId } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Food ID is required" }, { status: 400 });
@@ -53,6 +54,7 @@ export async function PUT(request: NextRequest) {
         ingredients,
         category,
         image,
+        restaurantId: restaurantId ? Number(restaurantId) : null,
         updatedAt: new Date(),
       })
       .where(eq(foods.id, Number(id)))
