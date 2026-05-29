@@ -1,0 +1,6 @@
+{
+  "name": "Diredawa Ras Hotel",
+  "description": "A responsive website cloning the layout, colors, and experience of the Diredawa Ras Hotel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
