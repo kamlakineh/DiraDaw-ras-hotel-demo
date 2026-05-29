@@ -180,7 +180,7 @@ export default function Home() {
             <Link href="/gallery" className="hover:text-[#bd902f] transition-colors">Gallery</Link>
             <Link href="/blog" className="hover:text-[#bd902f] transition-colors">Blog</Link>
             <Link href="/contact" className="hover:text-[#bd902f] transition-colors">Contact</Link>
-            <a href="#amenities" className="hover:text-[#bd902f] transition-colors">Amenities</a>
+            <Link href="/menu" className="hover:text-[#bd902f] transition-colors">Menu</Link>
           </div>
           <Link href="/#booking" className="hidden items-center gap-3 rounded-full bg-[#bd902f] px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:bg-[#a67724] lg:inline-flex">
             <span>Book Now</span>

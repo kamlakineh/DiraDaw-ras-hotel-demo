@@ -75,7 +75,7 @@ export default function GalleryPage() {
             <Link href="/gallery" className="text-[#bd902f]">Gallery</Link>
             <Link href="/blog" className="hover:text-[#bd902f] transition-colors">Blog</Link>
             <Link href="/contact" className="hover:text-[#bd902f] transition-colors">Contact</Link>
-            <Link href="/#amenities" className="hover:text-[#bd902f] transition-colors">Amenities</Link>
+            <Link href="/menu" className="hover:text-[#bd902f] transition-colors">Menu</Link>
           </div>
           <Link
             href="/#booking"
