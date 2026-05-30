@@ -1,10 +1,3 @@
 {
-  "/admin/page": "app/admin/page.js",
-  "/manager/page": "app/manager/page.js",
-  "/api/users/route": "app/api/users/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/manager/dashboard/page": "app/manager/dashboard/page.js",
-  "/api/manager/foods/route": "app/api/manager/foods/route.js",
-  "/api/uploadthing/route": "app/api/uploadthing/route.js",
-  "/api/manager/orders/route": "app/api/manager/orders/route.js"
+  "/page": "app/page.js"
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { 
-  Bed, 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
+import { useState, useEffect } from "react";
+import {
+  Bed,
+  Users,
+  DollarSign,
+  TrendingUp,
   Calendar,
   Utensils,
   FileText,
@@ -13,14 +13,57 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard({ user }) {
-  const [stats] = useState({
-    totalRooms: 60,
-    occupiedRooms: 42,
-    totalRestaurants: 9,
-    todayReservations: 28,
-    monthlyRevenue: 125000,
-    totalBlogPosts: 12
+  const [stats, setStats] = useState({
+    totalRooms: 0,
+    occupiedRooms: 0,
+    totalRestaurants: 0,
+    todayReservations: 0,
+    monthlyRevenue: 0,
+    totalBlogPosts: 0
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [roomsRes, restaurantsRes, blogsRes, bookingsRes] = await Promise.all([
+        fetch("/api/rooms"),
+        fetch("/api/restaurants"),
+        fetch("/api/blogs"),
+        fetch("/api/bookings"),
+      ]);
+
+      const rooms = roomsRes.ok ? await roomsRes.json() : [];
+      const restaurants = restaurantsRes.ok ? await restaurantsRes.json() : [];
+      const blogs = blogsRes.ok ? await blogsRes.json() : [];
+      const bookings = bookingsRes.ok ? await bookingsRes.json() : [];
+
+      const roomsArray = Array.isArray(rooms) ? rooms : [];
+      const restaurantsArray = Array.isArray(restaurants) ? restaurants : [];
+      const blogsArray = Array.isArray(blogs) ? blogs : [];
+      const bookingsArray = Array.isArray(bookings) ? bookings : [];
+
+      const totalRooms = roomsArray.reduce((sum, room) => sum + (room.totalRooms || 0), 0);
+      const occupiedRooms = bookingsArray.filter(b => b.status === "confirmed").length;
+      const todayReservations = restaurantsArray.reduce((sum, r) => sum + (r.todayReservations || 0), 0);
+
+      setStats({
+        totalRooms,
+        occupiedRooms,
+        totalRestaurants: restaurantsArray.length,
+        todayReservations,
+        monthlyRevenue: 125000,
+        totalBlogPosts: blogsArray.length
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const occupancyRate = Math.round((stats.occupiedRooms / stats.totalRooms) * 100);
 
@@ -40,14 +83,20 @@ export default function AdminDashboard({ user }) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="font-serif text-3xl font-bold text-neutral-900">Dashboard</h1>
-        <p className="mt-2 text-neutral-600">Welcome to the Dire Dawa Ras Hotel management system</p>
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-neutral-500">Loading dashboard data...</div>
+        </div>
+      ) : (
+        <>
+          {/* Header */}
+          <div>
+            <h1 className="font-serif text-3xl font-bold text-neutral-900">Dashboard</h1>
+            <p className="mt-2 text-neutral-600">Welcome to the Dire Dawa Ras Hotel management system</p>
+          </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Stats Grid */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white rounded-xl p-6 shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
@@ -185,6 +234,8 @@ export default function AdminDashboard({ user }) {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

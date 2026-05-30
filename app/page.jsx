@@ -61,7 +61,7 @@ const services = [
   {
     label: "Meal With Us",
     title: "The Restaurant",
-    image: "/images/restaurant-about.jpg",
+    image: "/images/images (1).jpg",
     text: "A memorable dining experience with a choice of delicious options for guests with a zest for the good life.",
     href: "/restaurant",
   },
@@ -76,7 +76,7 @@ const services = [
   {
     label: "Stay in great shape",
     title: "Spa",
-    image: "/images/spa.jpg",
+    image: "/images/spaethio.jpg",
     text: "Holistic rejuvenation through relaxing treatments customized to refresh your body and mind.",
     href: "/#amenities",
   },
@@ -120,11 +120,87 @@ function Button({ children, href = "#booking", light = false }) {
   );
 }
 
+// Helper CountUp component for Section 6 stats
+function CountUp({ value, trigger }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!trigger) return;
+    const numericValue = parseInt(value.replace(/[^0-9]/g, ""), 10);
+    if (isNaN(numericValue)) return;
+
+    let start = 0;
+    const end = numericValue;
+    const duration = 2000;
+    const stepTime = Math.max(Math.floor(duration / end), 20);
+
+    const timer = setInterval(() => {
+      start += Math.ceil(end / 40);
+      if (start >= end) {
+        clearInterval(timer);
+        start = end;
+      }
+      setCount(start);
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [trigger, value]);
+
+  const suffix = value.replace(/[0-9]/g, "");
+  return <>{trigger ? `${count}${suffix}` : `0${suffix}`}</>;
+}
+
 export default function Home() {
   const [rooms, setRooms] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loadingRooms, setLoadingRooms] = useState(true);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
+  const [visibleSections, setVisibleSections] = useState({ hero: true });
+  const [testimonialActive, setTestimonialActive] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Section 7 Testimonials Auto-scroll Carousel interval logic (Every 5 seconds)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTestimonialActive((prev) => (prev + 1) % 3);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setVisibleSections(prev => ({
+            ...prev,
+            [entry.target.id]: true
+          }));
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach(section => {
+      if (section.id !== 'hero') {
+        observer.observe(section);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -189,7 +265,8 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="relative flex min-h-screen items-center overflow-hidden">
+      {/* 1. Hero Section: Slide Right & Slide Left */}
+      <section id="hero" className="relative flex min-h-screen items-center overflow-hidden">
         <img
           src="/images/slide1.png"
           alt="Luxury hotel room"
@@ -198,24 +275,25 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 mx-auto max-w-7xl px-5 py-32 text-center">
           <Pill light>Est. 1964 EC</Pill>
-          <h1 className="mx-auto mt-6 max-w-5xl font-serif text-5xl font-bold leading-tight text-white md:text-7xl">
+          <h1 className={`mx-auto mt-6 max-w-5xl font-serif text-5xl font-bold leading-tight text-white md:text-7xl transition-all duration-1000 delay-300 ${visibleSections['hero'] ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
             Dire Dawa{" "}
             <span className="text-[#caa75d]">Ras Hotel</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">
+          <p className={`mx-auto mt-5 max-w-2xl text-lg text-white/80 transition-all duration-1000 delay-500 ${visibleSections['hero'] ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}>
             Full-service accommodation for business and leisure travellers.
             Traditional Ethiopian hospitality with modern amenities in the heart
             of Kezira, Dire Dawa.
           </p>
-          <div className="mt-8">
+          <div className={`mt-8 transition-all duration-1000 delay-700 ${visibleSections['hero'] ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             <Button light>Explore Rooms</Button>
           </div>
         </div>
       </section>
 
-      <section id="about" className="px-5 py-24">
+      {/* 2. About Section: scale-up-hor-right for text & scale-up-hor-center for image */}
+      <section id="about" className={`px-5 py-24 transition-all duration-1000 ${visibleSections['about'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-          <div>
+          <div className={`transition-all duration-1000 origin-right ${visibleSections['about'] ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'}`}>
             <Pill>About The Hotel</Pill>
             <h2 className="mt-5 font-serif text-4xl font-semibold leading-tight md:text-5xl">
               Discover{" "}
@@ -242,21 +320,22 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="relative">
+          <div className={`relative transition-all duration-1000 origin-center ${visibleSections['about'] ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'}`}>
             <img
-              src="/images/about.jpg"
+              src="/images/getlstd-property-photo.jpg"
               alt="Hotel interior"
               className="h-[540px] w-full rounded-[2rem] object-cover shadow-2xl"
             />
             <div className="absolute bottom-6 left-6 right-6 rounded-3xl bg-black/55 p-6 text-white backdrop-blur">
-              A new kind of hospitality experience, crafted for business and
+               genocide A new kind of hospitality experience, crafted for business and
               leisure travellers alike.
             </div>
           </div>
         </div>
       </section>
 
-      <section id="rooms" className="relative overflow-hidden bg-white px-5 py-24">
+      {/* 3. Rooms Section ("Revel in the Unmatched Comfort"): No Change */}
+      <section id="rooms" className={`relative overflow-hidden bg-white px-5 py-24 transition-all duration-1000 ${visibleSections['rooms'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <Pill>Rooms & Suites</Pill>
@@ -274,7 +353,7 @@ export default function Home() {
                 {rooms.map((room) => (
                   <article
                     key={room.id}
-                    className="overflow-hidden rounded-[2rem] bg-[#f7f5f1] shadow-sm transition hover:-translate-y-1 hover:shadow-xl flex flex-col h-full"
+                    className="overflow-hidden rounded-[2rem] bg-[#f7f5f1] shadow-sm transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:shadow-2xl flex flex-col h-full"
                   >
                     <div className="relative">
                       <img
@@ -331,7 +410,8 @@ export default function Home() {
         </p>
       </section>
 
-      <section id="restaurant" className="px-5 py-24">
+      {/* 4. Services Section ("We provide Top Class Facility"): Slide Left & Right */}
+      <section id="services" className={`px-5 py-24 transition-all duration-1000 ${visibleSections['services'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <Pill>Services</Pill>
@@ -347,14 +427,14 @@ export default function Home() {
                   service.reverse ? "lg:[&>div:first-child]:order-2" : ""
                 }`}
               >
-                <div>
+                <div className={`transition-all duration-1000 ${visibleSections['services'] ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
                   <img
                     src={service.image}
                     alt={service.title}
                     className="h-[380px] w-full rounded-[2rem] object-cover shadow-xl"
                   />
                 </div>
-                <div>
+                <div className={`transition-all duration-1000 ${visibleSections['services'] ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}>
                   <span className="rounded-full border border-black/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-neutral-600">
                     {service.label}
                   </span>
@@ -372,7 +452,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative grid min-h-[430px] place-items-center overflow-hidden px-5 text-center">
+      <section id="video" className={`relative grid min-h-[430px] place-items-center overflow-hidden px-5 text-center transition-all duration-1000 ${visibleSections['video'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <img
           src="/images/side2.png"
           alt="Hotel facilities"
@@ -389,7 +469,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="amenities" className="bg-white px-5 py-24">
+      {/* 5. Amenities Section ("Our Premium, Industry Leading Facilities"): No Change */}
+      <section id="amenities" className={`bg-white px-5 py-24 transition-all duration-1000 ${visibleSections['amenities'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <Pill>Hotel Amenities</Pill>
@@ -402,7 +483,7 @@ export default function Home() {
             {amenities.map(({ title, icon: Icon, text }) => (
               <div
                 key={title}
-                className="rounded-[2rem] border border-black/5 bg-[#f7f5f1] p-7 shadow-sm"
+                className="rounded-[2rem] border border-black/5 bg-[#f7f5f1] p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-xl"
               >
                 <div className="grid h-16 w-16 place-items-center rounded-2xl border border-black/10 bg-white text-[#bd902f]">
                   <Icon size={30} />
@@ -415,7 +496,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden px-5 py-24 text-white">
+      {/* 6. Experience Section ("Over 60 Years of Hospitality"): Side Animation & Stats Count Up */}
+      <section id="experience" className={`relative overflow-hidden px-5 py-24 text-white transition-all duration-1000 ${visibleSections['experience'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <img
           src="/images/experience.jpg"
           alt="Hotel experience"
@@ -423,12 +505,14 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/75" />
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-          <img
-            src="/images/about.jpg"
-            alt="Hotel lounge"
-            className="h-[460px] w-full rounded-[2rem] object-cover"
-          />
-          <div>
+          <div className={`transition-all duration-1000 ${visibleSections['experience'] ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
+            <img
+              src="/images/about.jpg"
+              alt="Hotel lounge"
+              className="h-[460px] w-full rounded-[2rem] object-cover"
+            />
+          </div>
+          <div className={`transition-all duration-1000 ${visibleSections['experience'] ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}>
             <Pill light>Our Experience</Pill>
             <h2 className="mt-5 font-serif text-4xl font-semibold leading-tight md:text-5xl">
               Over{" "}
@@ -452,7 +536,9 @@ export default function Home() {
                   const [number, ...label] = item.split(" ");
                   return (
                     <div key={item}>
-                      <p className="text-4xl font-bold">{number}</p>
+                      <p className="text-4xl font-bold">
+                        <CountUp value={number} trigger={visibleSections['experience']} />
+                      </p>
                       <p className="text-sm text-white/70">{label.join(" ")}</p>
                     </div>
                   );
@@ -463,39 +549,50 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-5 py-24">
+      {/* 7. Testimonials Section ("What Our Clients Say"): Seamless Side-Scrolling Every 5 Seconds */}
+      <section id="testimonials" className={`px-5 py-24 transition-all duration-1000 ${visibleSections['testimonials'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <Pill>Our Testimonials</Pill>
             <h2 className="mt-5 font-serif text-4xl font-semibold leading-tight md:text-5xl">
-              What Our <span className="text-[#bd902f]">Clients Say</span>
+              What Our <span className="text-[#bd902f]">Client Say</span>
             </h2>
           </div>
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            {[
-              "The staff was incredibly kind, the amenities were perfect, and we felt right at home the entire time.",
-              "Fast check-in, reliable Wi-Fi, and a peaceful atmosphere made my business trip productive and stress-free.",
-            ].map((quote, index) => (
-              <div key={quote} className="rounded-[2rem] bg-white p-8 shadow-sm">
-                <div className="mb-4 flex gap-1 text-[#bd902f]">
-                  {Array.from({ length: 5 }).map((_, star) => (
-                    <Star key={star} size={18} fill="currentColor" />
-                  ))}
+          <div className="mt-12 overflow-hidden w-full">
+            <div 
+              className="flex gap-6 transition-transform duration-1000 ease-in-out"
+              style={{
+                transform: `translateX(-${testimonialActive * (isDesktop ? 50 : 100)}%)`
+              }}
+            >
+              {[
+                "The staff was incredibly kind, the amenities were perfect, and we felt right at home the entire time.",
+                "Fast check-in, reliable Wi-Fi, and a peaceful atmosphere made my business trip productive and stress-free.",
+              ].concat([
+                "The staff was incredibly kind, the amenities were perfect, and we felt right at home the entire time.",
+                "Fast check-in, reliable Wi-Fi, and a peaceful atmosphere made my business trip productive and stress-free.",
+              ]).map((quote, index) => (
+                <div key={index} className="rounded-[2rem] bg-white p-8 shadow-sm w-full shrink-0 lg:w-[calc(50%-12px)]">
+                  <div className="mb-4 flex gap-1 text-[#bd902f]">
+                    {Array.from({ length: 5 }).map((_, star) => (
+                      <Star key={star} size={18} fill="currentColor" />
+                    ))}
+                  </div>
+                  <p className="text-lg leading-8 text-neutral-600">“{quote}”</p>
+                  <h3 className="mt-6 font-bold">
+                    {index % 2 === 0 ? "Sarah Mitchell" : "Olivia Bennett"}
+                  </h3>
+                  <p className="text-sm text-neutral-400">
+                    {index % 2 === 0 ? "From Spain" : "From United Kingdom"}
+                  </p>
                 </div>
-                <p className="text-lg leading-8 text-neutral-600">“{quote}”</p>
-                <h3 className="mt-6 font-bold">
-                  {index === 0 ? "Sarah Mitchell" : "Olivia Bennett"}
-                </h3>
-                <p className="text-sm text-neutral-400">
-                  {index === 0 ? "From Spain" : "From United Kingdom"}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-white px-5 py-24">
+      <section id="blog" className={`bg-white px-5 py-24 transition-all duration-1000 ${visibleSections['blog'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <Pill>News & Events</Pill>
@@ -513,7 +610,7 @@ export default function Home() {
                 {posts.map((post) => (
                   <article
                     key={post.id}
-                    className="overflow-hidden rounded-[2rem] bg-[#f7f5f1] shadow-sm flex flex-col h-full justify-between"
+                    className="overflow-hidden rounded-[2rem] bg-[#f7f5f1] shadow-sm transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:shadow-2xl flex flex-col h-full justify-between"
                   >
                     <div>
                       <div className="relative">
@@ -549,9 +646,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="booking" className="px-5 py-24">
+      {/* 8. Booking Section ("Embark on Your Bespoke Experience"): Slide Left & Right */}
+      <section id="booking" className={`px-5 py-24 transition-all duration-1000 ${visibleSections['booking'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-          <div>
+          <div className={`transition-all duration-1000 ${visibleSections['booking'] ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0'}`}>
             <Pill>Plan Your Stay</Pill>
             <h2 className="mt-5 font-serif text-4xl font-semibold leading-tight md:text-5xl">
               Embark on <span className="text-[#bd902f]">Your Bespoke</span>{" "}
@@ -562,7 +660,7 @@ export default function Home() {
               stay at our luxury hotel.
             </p>
           </div>
-          <div className="rounded-[2rem] bg-white p-8 shadow-xl">
+          <div className={`rounded-[2rem] bg-white p-8 shadow-xl transition-all duration-1000 ${visibleSections['booking'] ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'}`}>
             <h3 className="font-serif text-3xl font-semibold">
               Check <span className="text-[#bd902f]">Availability</span>
             </h3>
